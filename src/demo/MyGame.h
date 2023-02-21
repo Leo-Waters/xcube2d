@@ -10,9 +10,9 @@ struct GameKey {
 
 class MyGame : public AbstractGame {
 	private:
-		Rect box;
+		Rect Player1,Player2;
 
-		Vector2i velocity;
+		Vector2i Player2_velocity, Player1_velocity;
 
 		std::vector<std::shared_ptr<GameKey>> gameKeys;
 

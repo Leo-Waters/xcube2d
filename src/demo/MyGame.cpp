@@ -1,10 +1,22 @@
 #include "MyGame.h"
 
-MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), box(5, 5, 30, 30) {
+MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), Player1(5, 5, 30, 30), Player2(5,5,30,30) {
 	TTF_Font * font = ResourceManager::loadFont("res/fonts/arial.ttf", 72);
 	gfx->useFont(font);
 	gfx->setVerticalSync(true);
 
+	//test language select menu
+	std::cout << "-----Test Language Select\n";
+	std::vector<std::string> languages = mySystem->GetAvalibleLanguages();
+
+	for (size_t i = 0; i < languages.size(); i++)
+	{
+		std::cout << "("<<i<<")"<< languages.at(i)<<std::endl;
+	}
+	int selection;
+	std::cin >> selection;
+
+	mySystem->SetLanguage(languages.at(selection).c_str());
     for (int i = 0; i < numKeys; i++) {
         std::shared_ptr<GameKey> k = std::make_shared<GameKey>();
         k->isAlive = true;
@@ -21,36 +33,56 @@ void MyGame::handleKeyEvents() {
 	int speed = 3;
 
 	if (eventSystem->isPressed(Key::W)) {
-		velocity.y = -speed;
+		Player1_velocity.y = -speed;
 	}
 
 	if (eventSystem->isPressed(Key::S)) {
-		velocity.y = speed;
+		Player1_velocity.y = speed;
 	}
 
 	if (eventSystem->isPressed(Key::A)) {
-		velocity.x = -speed;
+		Player1_velocity.x = -speed;
 	}
 
 	if (eventSystem->isPressed(Key::D)) {
-		velocity.x = speed;
+		Player1_velocity.x = speed;
+	}
+
+	if (eventSystem->isPressed(Key::UP)) {
+		Player2_velocity.y = -speed;
+	}
+
+	if (eventSystem->isPressed(Key::DOWN)) {
+		Player2_velocity.y = speed;
+	}
+
+	if (eventSystem->isPressed(Key::LEFT)) {
+		Player2_velocity.x = -speed;
+	}
+
+	if (eventSystem->isPressed(Key::RIGHT)) {
+		Player2_velocity.x = speed;
 	}
 }
 
 void MyGame::update() {
-	box.x += velocity.x;
-	box.y += velocity.y;
+	Player1.x += Player1_velocity.x;
+	Player1.y += Player1_velocity.y;
+	Player2.x += Player2_velocity.x;
+	Player2.y += Player2_velocity.y;
 
 	for (auto key : gameKeys) {
-		if (key->isAlive && box.contains(key->pos)) {
+		if (key->isAlive && (Player1.contains(key->pos)|| Player2.contains(key->pos))) {
 			score += 200;
 			key->isAlive = false;
 			numKeys--;
 		}
 	}
 
-	velocity.x = 0;
-    velocity.y = 0;
+	Player1_velocity.x = 0;
+	Player1_velocity.y = 0;
+	Player2_velocity.x = 0;
+	Player2_velocity.y = 0;
 
 	if (numKeys == 0) {
 		gameWon = true;
@@ -59,7 +91,10 @@ void MyGame::update() {
 
 void MyGame::render() {
 	gfx->setDrawColor(SDL_COLOR_RED);
-	gfx->drawRect(box);
+	gfx->drawRect(Player1);
+
+	gfx->setDrawColor(SDL_COLOR_BLUE);
+	gfx->drawRect(Player2);
 
 	gfx->setDrawColor(SDL_COLOR_YELLOW);
 	for (auto key : gameKeys)
@@ -73,5 +108,5 @@ void MyGame::renderUI() {
 	gfx->drawText(scoreStr, 780 - scoreStr.length() * 50, 25);
 
 	if (gameWon)
-		gfx->drawText("YOU WON", 250, 500);
+		gfx->drawText(mySystem->GetText("win"), 250, 500);
 }
