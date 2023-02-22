@@ -11,12 +11,25 @@ MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false
 
 	for (size_t i = 0; i < languages.size(); i++)
 	{
-		std::cout << "("<<i<<")"<< languages.at(i)<<std::endl;
-	}
-	int selection;
-	std::cin >> selection;
+		std::cout << "(" << i << ")" << languages.at(i) << std::endl;
+	}bool SelectingLang = true;
+	while (SelectingLang)
+	{
+		int selection;
+		std::cin >> selection;
 
-	mySystem->SetLanguage(languages.at(selection).c_str());
+		if (selection < languages.size()) {
+			mySystem->SetLanguage(languages.at(selection).c_str());
+			SelectingLang = false;
+		}
+		else
+		{
+			std::cout << "Language " << selection << " is not a valid option\n";
+		}
+	}
+
+
+	
     for (int i = 0; i < numKeys; i++) {
         std::shared_ptr<GameKey> k = std::make_shared<GameKey>();
         k->isAlive = true;
@@ -107,6 +120,8 @@ void MyGame::renderUI() {
 	std::string scoreStr = std::to_string(score);
 	gfx->drawText(scoreStr, 780 - scoreStr.length() * 50, 25);
 
-	if (gameWon)
-		gfx->drawText(mySystem->GetText("win"), 250, 500);
+	if (gameWon) {
+		gfx->drawText(mySystem->GetText("win"), 0, 500);
+		gfx->drawText(mySystem->GetText("mutliLine"), 0, 100);
+	}
 }
