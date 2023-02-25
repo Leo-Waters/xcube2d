@@ -1,9 +1,7 @@
-#include "MyGame.h"
+﻿#include "MyGame.h"
 
 MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), Player1(5, 5, 30, 30), Player2(5,5,30,30) {
-	TTF_Font * font = ResourceManager::loadFont("res/fonts/arial.ttf", 72);
-	TTF_Font* Chineesefont = ResourceManager::loadFont("res/fonts/simplifiedChinese.ttf", 72);
-	gfx->useFont(Chineesefont);
+	
 	gfx->setVerticalSync(true);
 
 	//test language select menu
@@ -29,6 +27,7 @@ MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false
 		}
 	}
 
+	gfx->useFont(mySystem->GetFont("bold", 72));
 
 	
     for (int i = 0; i < numKeys; i++) {
@@ -118,10 +117,11 @@ void MyGame::render() {
 
 void MyGame::renderUI() {
 	gfx->setDrawColor(SDL_COLOR_AQUA);
+	gfx->useFont(mySystem->GetFont("main", 72));
 	std::string scoreStr = std::to_string(score);
 	gfx->drawText(scoreStr, 780 - scoreStr.length() * 50, 25);
-
 	if (gameWon) {
+		gfx->useFont(mySystem->GetFont("bold", 72));
 		gfx->drawText(mySystem->GetText("win"), 0, 500);
 		gfx->drawText(mySystem->GetText("mutliLine"), 0, 100);
 	}

@@ -1,1 +1,19 @@
-win=you won!!
+<fonts>
+
+<main>arial.ttf</main>
+<bold>FontsFree-Net-arial-bold.ttf</bold>
+
+</fonts>
+
+<translations>
+
+<win>you won!!</win>
+
+<mutliLine>
+this text
+is on multi
+lines
+</mutliLine>
+
+
+</translations>

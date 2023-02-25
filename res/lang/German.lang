@@ -1,1 +1,16 @@
-win=insert german!!
+<fonts>
+
+main="arial.ttf"
+bold="FontsFree-Net-arial-bold.ttf"
+
+</fonts>
+<translations>
+
+win="insert german!!"
+
+mutliLine="
+this text
+is on multi
+lines
+"
+</translations>
