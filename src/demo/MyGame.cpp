@@ -2,7 +2,8 @@
 
 MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), Player1(5, 5, 30, 30), Player2(5,5,30,30) {
 	TTF_Font * font = ResourceManager::loadFont("res/fonts/arial.ttf", 72);
-	gfx->useFont(font);
+	TTF_Font* Chineesefont = ResourceManager::loadFont("res/fonts/simplifiedChinese.ttf", 72);
+	gfx->useFont(Chineesefont);
 	gfx->setVerticalSync(true);
 
 	//test language select menu

@@ -1,4 +1,4 @@
-#include "MyEngineSystem.h"
+﻿#include "MyEngineSystem.h"
 namespace fs = std::filesystem;
 
 std::vector<std::string> MyEngineSystem::GetAvalibleLanguages(){
@@ -73,12 +73,14 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
                     }
                     else
                     {
+                        std::cout << value << "\n";
                         Translations.insert(std::pair<std::string, std::string>(key, value));
                     }
                     
                     
                     key = "";
                     value = "";
+                    
                     continue;
                 }
 
