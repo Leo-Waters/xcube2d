@@ -7,6 +7,11 @@ struct GameKey {
 	Point2 pos;
 	bool isAlive;
 };
+struct LangKey {
+	SDL_Rect pos;
+	std::string LanguageKey;
+	bool isAlive;
+};
 
 class MyGame : public AbstractGame {
 	private:
@@ -16,6 +21,8 @@ class MyGame : public AbstractGame {
 
 		std::vector<std::shared_ptr<GameKey>> gameKeys;
 
+		std::vector<std::shared_ptr<LangKey>> LanguageKeys;
+
 		/* GAMEPLAY */
 		int score, numKeys, lives;
 		bool gameWon;
@@ -24,6 +31,8 @@ class MyGame : public AbstractGame {
 		void update();
 		void render();
 		void renderUI();
+
+		void OnLanguageChanged();
 	public:
         MyGame();
 		~MyGame();

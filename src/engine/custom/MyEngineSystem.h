@@ -10,6 +10,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 /// <summary>
 /// 
 /// Module CI517 Game Engine Fundamentals 
@@ -30,6 +31,7 @@ class MyEngineSystem {
 		// map    Key ID --- Text Value
 		std::map<std::string,std::string>Translations;
 		std::map<std::string, std::string>Fonts;
+		std::map<std::string, std::string>Textures;
 		std::string currentLanguage;
 
 		bool LoadLanguageFile(const char* Language);
@@ -39,9 +41,10 @@ class MyEngineSystem {
 
 	public:
 		std::vector<std::string> GetAvalibleLanguages();
-		void SetLanguage(const char* Language);
+		void SetLanguage(const char* Language, std::function<void()> OnLoadLanguage);
 		std::string GetText(const char* ID);
 		TTF_Font* GetFont(const char* ID,const int& pointsize);
+		SDL_Texture* GetTexture(const char* ID);
 };
 
 #endif

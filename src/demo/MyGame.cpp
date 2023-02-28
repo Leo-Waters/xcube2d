@@ -18,7 +18,7 @@ MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false
 		std::cin >> selection;
 
 		if (selection < languages.size()) {
-			mySystem->SetLanguage(languages.at(selection).c_str());
+			mySystem->SetLanguage(languages.at(selection).c_str(), std::bind(&MyGame::OnLanguageChanged, this));
 			SelectingLang = false;
 		}
 		else
@@ -36,6 +36,13 @@ MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false
         k->pos = Point2(getRandom(0, 750), getRandom(0, 550));
         gameKeys.push_back(k);
     }
+
+	for (int i = 0; i < numKeys; i++) {
+		std::shared_ptr<LangKey> k = std::make_shared<LangKey>();
+		k->isAlive = true;
+		k->pos = { getRandom(0, 750), getRandom(0, 550), 10, 10 };
+		LanguageKeys.push_back(k);
+	}
 }
 
 MyGame::~MyGame() {
@@ -110,14 +117,21 @@ void MyGame::render() {
 	gfx->drawRect(Player2);
 
 	gfx->setDrawColor(SDL_COLOR_YELLOW);
-	for (auto key : gameKeys)
-        if (key->isAlive)
-		    gfx->drawCircle(key->pos, 5);
+	for (auto key : gameKeys) {
+		if (key->isAlive) {
+			gfx->drawCircle(key->pos, 5);
+		}
+	}
+	for (auto key : LanguageKeys) {
+		if (key->isAlive) {
+			gfx->drawTexture(mySystem->GetTexture("flag"),&key->pos,SDL_FLIP_NONE);
+		}
+	}
 }
 
 void MyGame::renderUI() {
 	gfx->setDrawColor(SDL_COLOR_AQUA);
-	gfx->useFont(mySystem->GetFont("main", 72));
+
 	std::string scoreStr = std::to_string(score);
 	gfx->drawText(scoreStr, 780 - scoreStr.length() * 50, 25);
 	if (gameWon) {
@@ -125,4 +139,9 @@ void MyGame::renderUI() {
 		gfx->drawText(mySystem->GetText("win"), 0, 500);
 		gfx->drawText(mySystem->GetText("mutliLine"), 0, 100);
 	}
+}
+
+void MyGame::OnLanguageChanged()
+{
+	gfx->useFont(mySystem->GetFont("main", 72));
 }

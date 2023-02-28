@@ -184,13 +184,14 @@ inline void MyEngineSystem::AddFont(std::string key, std::string value, const ch
         Fonts.insert(std::pair<std::string, std::string>(key, value));
     }
 }
-void MyEngineSystem::SetLanguage(const char* Language){
+void MyEngineSystem::SetLanguage(const char* Language, std::function<void()> OnLoadLanguage){
     //clear pervious language
     Translations.clear();
     currentLanguage = Language;
     //load language
     if (LoadLanguageFile(Language)) {//loaded sucessfully
         std::cout << "Loaded lang file: " << currentLanguage << std::endl;
+        OnLoadLanguage();
     }//Debug failed to load language
     else{ std::cout << "Failed to load lang file: " << currentLanguage << std::endl; }
 }
@@ -218,4 +219,9 @@ TTF_Font* MyEngineSystem::GetFont(const char* ID,const int& pointsize)
         return nullptr;
     }
     
+}
+
+SDL_Texture* MyEngineSystem::GetTexture(const char* ID)
+{
+    return ResourceManager::getTexture(Textures.at(ID));
 }
