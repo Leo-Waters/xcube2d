@@ -1,16 +1,20 @@
 <fonts>
 
-main="arial.ttf"
-bold="FontsFree-Net-arial-bold.ttf"
+<main>arial.ttf</main>
+<bold>FontsFree-Net-arial-bold.ttf</bold>
 
 </fonts>
 <translations>
 
-win="insert german!!"
+<win>you won!!</win>
 
-mutliLine="
-this text
-is on multi
-lines
-"
+<name>
+Germany
+</name>
+
 </translations>
+
+<assets>
+<flag>germany.png</flag>
+
+</assets>

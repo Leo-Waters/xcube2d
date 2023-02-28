@@ -41,6 +41,7 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
         //main enclosing tag type
         bool GettingFonts = false;
         bool GettingTranslation = false;
+        bool GettingAssets = false;
 
         //getting element data
         bool GettingElement = false;
@@ -74,6 +75,11 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
                             TagValue = "";
                             continue;
                         }
+                        else if (TagValue == "assets") {//getting translations
+                            GettingAssets = true;
+                            TagValue = "";
+                            continue;
+                        }
                         else
                         {
                             GettingElement = true;
@@ -92,6 +98,11 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
                             TagValue = "";
                             continue;
                         }
+                        else if (TagValue == "assets") {//no longer getting translations
+                            GettingAssets = false;
+                            TagValue = "";
+                            continue;
+                        }
                         else
                         {
                             GettingElement = false;
@@ -106,6 +117,13 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
                             {
                                 //add translation
                                 AddTranslation(TagValue, ElementValue, Language, lineNumber, i);
+                                TagValue = "";
+                                ElementValue = "";
+                            }
+                            else if (GettingAssets)
+                            {
+                                //add translation
+                                AddAsset(TagValue, ElementValue, Language, lineNumber, i);
                                 TagValue = "";
                                 ElementValue = "";
                             }
@@ -184,9 +202,26 @@ inline void MyEngineSystem::AddFont(std::string key, std::string value, const ch
         Fonts.insert(std::pair<std::string, std::string>(key, value));
     }
 }
+inline void MyEngineSystem::AddAsset(std::string key, std::string value, const char* Language, int lineNumber, int Index)
+{
+    if (key == " " || value == " " || key == "" || value == "") {
+        std::cout << "\nERROR: Cannot add an entry without a localized texture key or value!!\nLanguage file :" << Language << " Ending on Line " << lineNumber << " [" << Index << "]\n\n";
+
+    }
+    else if (Assets.count(key)) {
+        std::cout << "\nERROR: Cannot Load a localized texture key!!\nLanguage file :" << Language << " Ending on Line " << lineNumber << " [" << Index << "]\n\n";
+    }
+    else
+    {
+        std::cout << "Asset " << key << " :" << value << "\n";
+        Assets.insert(std::pair<std::string, std::string>(key, value));
+    }
+}
 void MyEngineSystem::SetLanguage(const char* Language, std::function<void()> OnLoadLanguage){
     //clear pervious language
     Translations.clear();
+    Assets.clear();
+    Fonts.clear();
     currentLanguage = Language;
     //load language
     if (LoadLanguageFile(Language)) {//loaded sucessfully
@@ -223,5 +258,6 @@ TTF_Font* MyEngineSystem::GetFont(const char* ID,const int& pointsize)
 
 SDL_Texture* MyEngineSystem::GetTexture(const char* ID)
 {
-    return ResourceManager::getTexture(Textures.at(ID));
+    std::string TexutureName = AssetLoadPath + Assets.at(ID);
+    return ResourceManager::getTexture(TexutureName);
 }

@@ -28,16 +28,18 @@ class MyEngineSystem {
 		//path of the language files folder
 		const char * LangLoadPath="./res/lang/";
 		const char*  FontLoadPath = "./res/fonts/";
+		const char*  AssetLoadPath = "./res/textures/";
 		// map    Key ID --- Text Value
 		std::map<std::string,std::string>Translations;
 		std::map<std::string, std::string>Fonts;
-		std::map<std::string, std::string>Textures;
+		std::map<std::string, std::string>Assets;
 		std::string currentLanguage;
 
 		bool LoadLanguageFile(const char* Language);
 
 		inline void AddTranslation(std::string key, std::string value, const char* Language, int lineNumber, int Index);
 		inline void AddFont(std::string key, std::string value, const char* Language, int lineNumber, int Index);
+		inline void AddAsset(std::string key, std::string value, const char* Language, int lineNumber, int Index);
 
 	public:
 		std::vector<std::string> GetAvalibleLanguages();

@@ -8,8 +8,9 @@ struct GameKey {
 	bool isAlive;
 };
 struct LangKey {
-	SDL_Rect pos;
+	SDL_Rect* pos;
 	std::string LanguageKey;
+	SDL_Texture* Texture;
 	bool isAlive;
 };
 
@@ -24,13 +25,15 @@ class MyGame : public AbstractGame {
 		std::vector<std::shared_ptr<LangKey>> LanguageKeys;
 
 		/* GAMEPLAY */
-		int score, numKeys, lives;
+		int score, numKeys, lives,LangIndex;
 		bool gameWon;
 
 		void handleKeyEvents();
 		void update();
 		void render();
 		void renderUI();
+
+		void NextLanguage();
 
 		void OnLanguageChanged();
 	public:

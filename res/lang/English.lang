@@ -9,11 +9,14 @@
 
 <win>you won!!</win>
 
-<mutliLine>
-this text
-is on multi
-lines
-</mutliLine>
+<name>
+England
+</name>
 
 
 </translations>
+
+<assets>
+<flag>england.png</flag>
+
+</assets>

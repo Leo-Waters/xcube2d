@@ -20,6 +20,8 @@ SDL_Texture * ResourceManager::loadTexture(std::string file, SDL_Color trans) {
 
 	SDL_FreeSurface(surf);
 
+	textures.insert(std::pair<std::string, SDL_Texture*>(file, texture));
+
 	return texture;
 }
 
