@@ -2,39 +2,23 @@
 
 namespace fs = std::filesystem;
 
-std::vector<std::string> MyEngineSystem::GetAvalibleLanguages(){
-     std::cout <<"Getting avalible Lanuages"<< std::endl;
-     std::vector<std::string> languages = std::vector<std::string>();
 
-    for (const auto & entry : fs::directory_iterator(LangLoadPath)){
-
-        if (entry.path().extension() == ".lang") {
-            std::string NameWithExt = entry.path().filename().string();
-
-            std::string name= NameWithExt.substr(0, NameWithExt.find_last_of("."));
-            languages.push_back(name);
-
-            std::cout << name << std::endl;
-        }
-        else {
-            std::cout << entry.path().filename().string() << " is not a lang file";
-        }
-    }
-    std::cout << "-----------------------------" << std::endl;
-    return languages;
-}
 
 
 bool MyEngineSystem::LoadLanguageFile(const char* Language)
 {
-
+    //the directory the language files are stored
     std::string Dir = std::string(LangLoadPath);
+
+    //adds the specific language file to the path
     Dir += Language;
     Dir += ".lang";
     std::fstream file;
 
+    //opens the file
     file.open(Dir, std::ios::in);
 
+    //did the file open correctly
     if (file.is_open()) {
         std::string line;
 
@@ -56,15 +40,13 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
         while (std::getline(file, line)) {
             lineNumber++;
 
-
             for (size_t i = 0; i < line.length(); i++)
             {
-
                 //has a tag been ended
                 if (line[i] == '>') {
                     GettingTag = false;
 
-                    if (OpenTag == true) {
+                    if (OpenTag == true) {//is it a tag oppening an element or category
                         if (TagValue == "fonts") {//getting fonts
                             GettingFonts = true;
                             TagValue = "";
@@ -80,13 +62,9 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
                             TagValue = "";
                             continue;
                         }
-                        else
-                        {
-                            GettingElement = true;
-                            continue;
-                        }
+                        else{ GettingElement = true; continue; }//getting an element
                     }
-                    else
+                    else//element is closing an element or category
                     {
                         if (TagValue == "fonts") {//no longer adding fonts
                             GettingFonts = false;
@@ -157,16 +135,25 @@ bool MyEngineSystem::LoadLanguageFile(const char* Language)
                     ElementValue += line[i];
                     continue;
                 }
-
-            }
-
-            
-
+            }      
         }
-        file.close();
-        return true;
+
+        if (GettingFonts) {
+            std::cout << "\nERROR: Fonts Tag wasnt closed in Language File :" << Language << "\n\n";
+        }
+        if (GettingTranslation) {
+            std::cout << "\nERROR: Translations Tag wasnt closed in Language File :" << Language << "\n\n";
+        }
+        if (GettingAssets) {
+            std::cout << "\nERROR: Assets Tag wasnt closed in Language File :" << Language << "\n\n";
+        }
+        if (GettingElement) {
+            std::cout << "\nERROR: Element Tag wasnt closed in Language File :" << Language << "\n\n";
+        }
+        file.close();//end of file
+        return true;//loaded language 
     }
-    else
+    else// file didnt exist, failed to load language
     {
         return false;
     }
@@ -217,6 +204,32 @@ inline void MyEngineSystem::AddAsset(std::string key, std::string value, const c
         Assets.insert(std::pair<std::string, std::string>(key, value));
     }
 }
+
+
+
+
+std::vector<std::string> MyEngineSystem::GetAvalibleLanguages() {
+    std::cout << "Getting avalible Lanuages" << std::endl;
+    std::vector<std::string> languages = std::vector<std::string>();
+
+    for (const auto& entry : fs::directory_iterator(LangLoadPath)) {
+
+        if (entry.path().extension() == ".lang") {
+            std::string NameWithExt = entry.path().filename().string();
+
+            std::string name = NameWithExt.substr(0, NameWithExt.find_last_of("."));
+            languages.push_back(name);
+
+            std::cout << name << std::endl;
+        }
+        else {
+            std::cout << entry.path().filename().string() << " is not a lang file";
+        }
+    }
+    std::cout << "-----------------------------" << std::endl;
+    return languages;
+}
+
 void MyEngineSystem::SetLanguage(const char* Language, std::function<void()> OnLoadLanguage){
     //clear pervious language
     Translations.clear();
@@ -232,10 +245,10 @@ void MyEngineSystem::SetLanguage(const char* Language, std::function<void()> OnL
 }
 std::string MyEngineSystem::GetText(const char* ID){
 
-    if (Translations.count(ID)) {
+    if (Translations.count(ID)) {//does ID exist
         return Translations.at(ID);
     }
-    else
+    else// no log error
     {
         std::cout << "No Entry of '" << ID << "' in lang file: " << currentLanguage << std::endl;
         return std::string("No Text in Lang File");
@@ -245,10 +258,10 @@ std::string MyEngineSystem::GetText(const char* ID){
 
 TTF_Font* MyEngineSystem::GetFont(const char* ID,const int& pointsize)
 {
-    if (Fonts.count(ID)) {
+    if (Fonts.count(ID)) {//does ID exist
         return ResourceManager::loadFont(FontLoadPath+Fonts.at(ID), pointsize);
     }
-    else
+    else// no log error
     {
         std::cout << "No Entry of '" << ID << "' in fonts from "<<currentLanguage<<" Lang File" << std::endl;
         return nullptr;
@@ -258,6 +271,16 @@ TTF_Font* MyEngineSystem::GetFont(const char* ID,const int& pointsize)
 
 SDL_Texture* MyEngineSystem::GetTexture(const char* ID)
 {
-    std::string TexutureName = AssetLoadPath + Assets.at(ID);
-    return ResourceManager::getTexture(TexutureName);
+    if (Assets.count(ID)) {//does ID exist
+        std::string TexutureName = AssetLoadPath + Assets.at(ID);
+        return ResourceManager::getTexture(TexutureName);
+    }
+    else// no log error
+    {
+        std::cout << "No Entry of '" << ID << "' in assets from " << currentLanguage << " Lang File" << std::endl;
+        return nullptr;
+    }
+
+    
+    
 }
