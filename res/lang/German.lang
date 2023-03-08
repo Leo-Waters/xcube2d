@@ -6,11 +6,38 @@
 </fonts>
 <translations>
 
-<win>you won!!</win>
+<gameover>Spiel ist aus!</gameover>
+
+<CorrectBalls>Richtige Balle gesammelt: </CorrectBalls>
+
+<IncorrectBalls>Falsche Balle gesammelt: </IncorrectBalls>
+
+<score>Punktzahl: </score>
 
 <name>
-Germany
+Aktuelle Sprache: Deutsch
 </name>
+
+<blue>
+Sammle den blauen Ball!
+</blue>
+
+<green>
+Sammle den grunen Ball!
+</green>
+
+<purple>
+Sammle den lila Ball!
+</purple>
+
+<red>
+Sammle den roten Ball!
+</red>
+
+<yellow>
+Sammle den gelben Ball!
+</yellow>
+
 
 </translations>
 

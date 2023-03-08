@@ -1,25 +1,33 @@
 ﻿#include "MyGame.h"
 
-MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false), Player1(5, 5, 30, 30), Player2(5,5,30,30) {
+MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30, 30) {
 	
 	gfx->setVerticalSync(true);
 
 	//load textures--------------------------------------------------------------
 	ResourceManager::loadTexture("./res/textures/germany.png", SDL_Color());
-	ResourceManager::loadTexture("./res/textures/england.png", SDL_Color());
+	ResourceManager::loadTexture("./res/textures/england.png", SDL_Color()); 
+	ResourceManager::loadTexture("./res/textures/france.png", SDL_Color());
+	
+	background = ResourceManager::loadTexture("./res/textures/background.png", SDL_Color());
+	
 
-	//create flags----------------------------------------------------------------
-	for (int i = 0; i < numKeys; i++) {
-		std::shared_ptr<LangKey> k = std::make_shared<LangKey>();
-		k->isAlive = true;
-		k->pos = new SDL_Rect{ getRandom(0, 750), getRandom(0, 550), 50, 30 };
-		LanguageKeys.push_back(k);
+	for (size_t i = 0; i < ballnames->length(); i++)
+	{
+		//create balls----------------------------------------------------------------
+		std::shared_ptr<ball> k = std::make_shared<ball>();
+		k->pos = new SDL_Rect{ getRandom(0, 750), getRandom(100, 550), 30, 30 };
+		k->Texture = ResourceManager::loadTexture("./res/textures/ball_" + ballnames[i] + ".png", SDL_Color());
+		k->name = ballnames[i];
+		balls.push_back(k);
 	}
+
+	
 
 
 
 	//test language select menu
-	std::cout << "-----Test Language Select\n";
+	std::cout << "-----Test set starting Language \n";
 	std::vector<std::string> languages = mySystem->GetAvalibleLanguages();
 
 	for (size_t i = 0; i < languages.size(); i++)
@@ -34,6 +42,7 @@ MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false
 		if (selection < languages.size()) {
 			LangIndex = selection;
 			mySystem->SetLanguage(languages.at(selection).c_str(), std::bind(&MyGame::OnLanguageChanged, this));
+			SelectedLanguage = languages.at(selection);
 			SelectingLang = false;
 		}
 		else
@@ -47,6 +56,7 @@ MyGame::MyGame() : AbstractGame(), score(0), lives(3), numKeys(5), gameWon(false
 
 void MyGame::NextLanguage()
 {
+	CurrentAnswer = ballnames[getRandom(0, ballnames->length())];
 	LangIndex++;
 	std::vector<std::string> languages = mySystem->GetAvalibleLanguages();
 	if (LangIndex == languages.size()) {
@@ -61,7 +71,7 @@ MyGame::~MyGame() {
 }
 
 void MyGame::handleKeyEvents() {
-	int speed = 3;
+	int speed = 5;
 
 	if (eventSystem->isPressed(Key::W)) {
 		Player1_velocity.y = -speed;
@@ -79,78 +89,96 @@ void MyGame::handleKeyEvents() {
 		Player1_velocity.x = speed;
 	}
 
-	if (eventSystem->isPressed(Key::UP)) {
-		Player2_velocity.y = -speed;
-	}
-
-	if (eventSystem->isPressed(Key::DOWN)) {
-		Player2_velocity.y = speed;
-	}
-
-	if (eventSystem->isPressed(Key::LEFT)) {
-		Player2_velocity.x = -speed;
-	}
-
-	if (eventSystem->isPressed(Key::RIGHT)) {
-		Player2_velocity.x = speed;
-	}
 }
 
 void MyGame::update() {
 	Player1.x += Player1_velocity.x;
 	Player1.y += Player1_velocity.y;
-	Player2.x += Player2_velocity.x;
-	Player2.y += Player2_velocity.y;
 
 
-	for (auto key : LanguageKeys) {
+	for (auto key : balls) {
 		Point2 pos(key->pos->x+ (key->pos->w/2), key->pos->y + (key->pos->h / 2));
-		if (key->isAlive && (Player1.contains(pos) || Player2.contains(pos))) {
-			score += 200;
-			key->isAlive = false;
-			numKeys--;
+		if (Player1.contains(pos)) {
+
+			if (key->name == CurrentAnswer) {
+				score += 200;
+				correctBalls++;
+			}
+			else
+			{
+				IncorrectBalls++;
+			}
+
+			key->pos = new SDL_Rect{ getRandom(0, 750), getRandom(100, 550), 30, 30 };
 			NextLanguage();
 		}
 	}
 
 	Player1_velocity.x = 0;
 	Player1_velocity.y = 0;
-	Player2_velocity.x = 0;
-	Player2_velocity.y = 0;
-
-	if (numKeys == 0) {
+	if (correctBalls+IncorrectBalls == 10&&!gameWon) {
+		mySystem->SetLanguage(SelectedLanguage.c_str(), std::bind(&MyGame::OnLanguageChanged, this));
 		gameWon = true;
 	}
+
 }
 
 void MyGame::render() {
+
+	backgroundpos.w = gfx->getCurrentWindowSize().w;
+	backgroundpos.h = gfx->getCurrentWindowSize().h;
+
+	gfx->drawTexture(background, &backgroundpos, SDL_FLIP_NONE);
+
+	if (gameWon) {
+		return;
+	}
+
 	gfx->setDrawColor(SDL_COLOR_RED);
 	gfx->drawRect(Player1);
 
-	gfx->setDrawColor(SDL_COLOR_BLUE);
-	gfx->drawRect(Player2);
-
 	gfx->setDrawColor(SDL_COLOR_YELLOW);
 
-	for (auto key : LanguageKeys) {
-		if (key->isAlive) {
-			gfx->drawTexture(mySystem->GetTexture("flag"), key->pos, SDL_FLIP_NONE);
-		}
+	gfx->drawTexture(flag, &flagPos, SDL_FLIP_NONE);
+
+	for (auto key : balls) {
+		gfx->drawTexture(key->Texture, key->pos, SDL_FLIP_NONE);
 	}
 }
 
 void MyGame::renderUI() {
-	
-	gfx->setDrawColor(SDL_COLOR_AQUA);
-	gfx->useFont(mySystem->GetFont("main", 30));
-	gfx->drawText(mySystem->GetText("name"), 0, 25);
-
-	std::string scoreStr = std::to_string(score);
-	gfx->drawText(scoreStr, 780 - scoreStr.length() * 50, 25);
 	if (gameWon) {
+		gfx->setDrawColor(SDL_COLOR_YELLOW);
 		gfx->useFont(mySystem->GetFont("bold", 72));
-		gfx->drawText(mySystem->GetText("win"), 0, 500);
+		gfx->drawText(mySystem->GetText("gameover"), 0, 500);
+		gfx->useFont(mySystem->GetFont("bold", 30));
+
+		std::string correctballs = mySystem->GetText("CorrectBalls");
+		correctballs += std::to_string(correctBalls);
+
+		std::string Incorrectballs = mySystem->GetText("IncorrectBalls");
+		Incorrectballs += std::to_string(IncorrectBalls);
+
+		gfx->drawText(correctballs, 0, 100);
+		gfx->drawText(Incorrectballs, 0, 130);
+
+		std::string scoreStr = mySystem->GetText("score") + std::to_string(score);
+		gfx->drawText(scoreStr, 0, 160);
 	}
+	else
+	{
+		gfx->setDrawColor(SDL_COLOR_AQUA);
+		gfx->useFont(mySystem->GetFont("main", 20));
+		gfx->drawText(mySystem->GetText("name"), 65, 27);
+
+		gfx->useFont(mySystem->GetFont("main", 15));
+		gfx->drawText(mySystem->GetText(CurrentAnswer.c_str()), 65, 50);
+
+	}
+
+
+
+
 }
 
 
@@ -158,8 +186,5 @@ void MyGame::renderUI() {
 void MyGame::OnLanguageChanged()
 {
 	gfx->useFont(mySystem->GetFont("main", 72));
-
-	for (int i = 0; i < LanguageKeys.size(); i++) {
-		LanguageKeys[i]->Texture = mySystem->GetTexture("flag");
-	}
+	flag = mySystem->GetTexture("flag");
 }

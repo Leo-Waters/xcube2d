@@ -3,29 +3,31 @@
 
 #include "../engine/AbstractGame.h"
 
-struct GameKey {
-	Point2 pos;
-	bool isAlive;
-};
-struct LangKey {
+struct ball {
+	std::string name;
 	SDL_Rect* pos;
 	std::string LanguageKey;
 	SDL_Texture* Texture;
-	bool isAlive;
 };
 
 class MyGame : public AbstractGame {
 	private:
-		Rect Player1,Player2;
+		std::string ballnames[5]={"blue","green","purple","red","yellow"};
+		Rect Player1;
 
-		Vector2i Player2_velocity, Player1_velocity;
+		SDL_Texture* flag;
+		SDL_Texture* background;
+		SDL_Rect flagPos = { 10, 25, 50, 30 };
+		SDL_Rect backgroundpos = { 0, 0, 0, 0 };
+		Vector2i Player1_velocity;
 
-		std::vector<std::shared_ptr<GameKey>> gameKeys;
-
-		std::vector<std::shared_ptr<LangKey>> LanguageKeys;
+		std::vector<std::shared_ptr<ball>> balls;
 
 		/* GAMEPLAY */
-		int score, numKeys, lives,LangIndex;
+		int score,LangIndex,correctBalls=0,IncorrectBalls=0;
+		std::string CurrentAnswer= ballnames[0];
+		std::string SelectedLanguage;
+
 		bool gameWon;
 
 		void handleKeyEvents();

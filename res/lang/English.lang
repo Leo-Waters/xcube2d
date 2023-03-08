@@ -7,11 +7,38 @@
 
 <translations>
 
-<win>you won!!</win>
+<gameover>Game Over!</gameover>
+
+<CorrectBalls>Correct balls collected: </CorrectBalls>
+
+<IncorrectBalls>Incorrect balls collected: </IncorrectBalls>
+
+<score>score: </score>
 
 <name>
-England
+Current Language: England
 </name>
+
+<blue>
+Collect the Blue Ball!
+</blue>
+
+<green>
+Collect the Green Ball!
+</green>
+
+<purple>
+Collect the Purple Ball!
+</purple>
+
+<red>
+Collect the Red Ball!
+</red>
+
+<yellow>
+Collect the Yellow Ball!
+</yellow>
+
 
 
 </translations>

@@ -1,0 +1,49 @@
+<fonts>
+
+<main>arial.ttf</main>
+<bold>FontsFree-Net-arial-bold.ttf</bold>
+
+</fonts>
+
+<translations>
+
+<gameover>Jeu termine!</gameover>
+
+<CorrectBalls>Bonnes boules recuperees : </CorrectBalls>
+
+<IncorrectBalls>Balles incorrectes collectees : </IncorrectBalls>
+
+<score>score: </score>
+
+<name>
+Langue actuelle : francais
+</name>
+
+<blue>
+Recuperez la balle bleue !
+</blue>
+
+<green>
+Recuperez la balle verte !
+</green>
+
+<purple>
+Recuperez la boule violette !
+</purple>
+
+<red>
+Recuperez la balle rouge !
+</red>
+
+<yellow>
+Recuperez la balle jaune !
+</yellow>
+
+
+
+</translations>
+
+<assets>
+<flag>france.png</flag>
+
+</assets>
