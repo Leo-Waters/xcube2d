@@ -21,6 +21,11 @@ class MyGame : public AbstractGame {
 		SDL_Rect backgroundpos = { 0, 0, 0, 0 };
 		Vector2i Player1_velocity;
 
+		TTF_Font* Font_Main= nullptr;
+		TTF_Font* Font_Bold = nullptr;
+		TTF_Font* Font_Large_Main = nullptr;
+		TTF_Font* Font_Large_Bold = nullptr;
+
 		std::vector<std::shared_ptr<ball>> balls;
 
 		/* GAMEPLAY */

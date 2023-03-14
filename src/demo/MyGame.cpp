@@ -149,9 +149,9 @@ void MyGame::render() {
 void MyGame::renderUI() {
 	if (gameWon) {
 		gfx->setDrawColor(SDL_COLOR_YELLOW);
-		gfx->useFont(mySystem->GetFont("bold", 72));
+		gfx->useFont(Font_Large_Bold);
 		gfx->drawText(mySystem->GetText("gameover"), 0, 500);
-		gfx->useFont(mySystem->GetFont("bold", 30));
+		gfx->useFont(Font_Bold);
 
 		std::string correctballs = mySystem->GetText("CorrectBalls");
 		correctballs += std::to_string(correctBalls);
@@ -168,11 +168,11 @@ void MyGame::renderUI() {
 	else
 	{
 		gfx->setDrawColor(SDL_COLOR_AQUA);
-		gfx->useFont(mySystem->GetFont("main", 20));
+		gfx->useFont(Font_Large_Main);
 		gfx->drawText(mySystem->GetText("name"), 65, 27);
 
-		gfx->useFont(mySystem->GetFont("main", 15));
-		gfx->drawText(mySystem->GetText(CurrentAnswer.c_str()), 65, 50);
+		gfx->useFont(Font_Main);
+		gfx->drawText(mySystem->GetText(CurrentAnswer.c_str()), 65, 60);
 
 	}
 
@@ -185,6 +185,19 @@ void MyGame::renderUI() {
 
 void MyGame::OnLanguageChanged()
 {
-	gfx->useFont(mySystem->GetFont("main", 72));
 	flag = mySystem->GetTexture("flag");
+
+	if (Font_Large_Bold != nullptr) {
+		TTF_CloseFont(Font_Large_Bold);
+		TTF_CloseFont(Font_Bold);
+		TTF_CloseFont(Font_Large_Main);
+		TTF_CloseFont(Font_Main);
+
+	}
+
+	Font_Large_Bold = mySystem->GetFont("bold", 72);
+	Font_Bold = mySystem->GetFont("bold", 30);
+
+	Font_Large_Main = mySystem->GetFont("main", 30);
+	Font_Main = mySystem->GetFont("main", 20);
 }
