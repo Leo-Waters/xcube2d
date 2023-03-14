@@ -12,6 +12,7 @@ MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30
 	background = ResourceManager::loadTexture("./res/textures/background.png", SDL_Color());
 	
 
+	//create all the ball gameobjects and load the textures
 	for (size_t i = 0; i < ballnames->length(); i++)
 	{
 		//create balls----------------------------------------------------------------
@@ -34,18 +35,18 @@ MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30
 	{
 		std::cout << "(" << i << ")" << languages.at(i) << std::endl;
 	}bool SelectingLang = true;
-	while (SelectingLang)
+	while (SelectingLang)//while lnaguage hasnt been chosen
 	{
 		int selection;
 		std::cin >> selection;
 
-		if (selection < languages.size()) {
+		if (selection < languages.size()) {// the player selected a valid lanugage
 			LangIndex = selection;
-			mySystem->SetLanguage(languages.at(selection).c_str(), std::bind(&MyGame::OnLanguageChanged, this));
-			SelectedLanguage = languages.at(selection);
-			SelectingLang = false;
+			mySystem->SetLanguage(languages.at(selection).c_str(), std::bind(&MyGame::OnLanguageChanged, this));//set language
+			SelectedLanguage = languages.at(selection);//store the name of the players language so the score can be displayed in there own language at game over
+			SelectingLang = false;//break out of the loop
 		}
-		else
+		else//the player didnt select a valid language option
 		{
 			std::cout << "Language " << selection << " is not a valid option\n";
 		}
@@ -54,14 +55,17 @@ MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30
 
 }
 
+//set the next answer, and the language to the next avaliable language
 void MyGame::NextLanguage()
 {
+	//randomise ball question
 	CurrentAnswer = ballnames[getRandom(0, ballnames->length())];
 	LangIndex++;
 	std::vector<std::string> languages = mySystem->GetAvalibleLanguages();
-	if (LangIndex == languages.size()) {
+	if (LangIndex == languages.size()) {//if language index is at end loop back to begining
 		LangIndex = 0;
 	}
+	//set the next language
 	mySystem->SetLanguage(languages.at(LangIndex).c_str(), std::bind(&MyGame::OnLanguageChanged, this));
 }
 
@@ -70,7 +74,7 @@ MyGame::~MyGame() {
 
 }
 
-void MyGame::handleKeyEvents() {
+void MyGame::handleKeyEvents() {//get the players inputs to determin the players movement direction
 	int speed = 5;
 
 	if (eventSystem->isPressed(Key::W)) {
@@ -92,25 +96,26 @@ void MyGame::handleKeyEvents() {
 }
 
 void MyGame::update() {
+	//update the player position based on input velocity
 	Player1.x += Player1_velocity.x;
 	Player1.y += Player1_velocity.y;
 
 
-	for (auto key : balls) {
+	for (auto key : balls) {// check if the player has reached the ball
 		Point2 pos(key->pos->x+ (key->pos->w/2), key->pos->y + (key->pos->h / 2));
 		if (Player1.contains(pos)) {
 
-			if (key->name == CurrentAnswer) {
+			if (key->name == CurrentAnswer) {//player has picked the correct ball, update score
 				score += 200;
 				correctBalls++;
 			}
-			else
+			else//player has picked the incorrect ball
 			{
 				IncorrectBalls++;
 			}
 
-			key->pos = new SDL_Rect{ getRandom(0, 750), getRandom(100, 550), 30, 30 };
-			NextLanguage();
+			key->pos = new SDL_Rect{ getRandom(0, 750), getRandom(100, 550), 30, 30 };//move ball to random pos
+			NextLanguage();//switch the language
 		}
 	}
 
@@ -125,12 +130,14 @@ void MyGame::update() {
 
 void MyGame::render() {
 
+	//set the background to cover the screen and draw
 	backgroundpos.w = gfx->getCurrentWindowSize().w;
 	backgroundpos.h = gfx->getCurrentWindowSize().h;
 
 	gfx->drawTexture(background, &backgroundpos, SDL_FLIP_NONE);
 
 	if (gameWon) {
+		//game has been won so we dont need to draw the game objects 
 		return;
 	}
 
@@ -148,6 +155,7 @@ void MyGame::render() {
 
 void MyGame::renderUI() {
 	if (gameWon) {
+		//game has been won, draw the game over UI and display the players score
 		gfx->setDrawColor(SDL_COLOR_YELLOW);
 		gfx->useFont(Font_Large_Bold);
 		gfx->drawText(mySystem->GetText("gameover"), 0, 500);
@@ -167,6 +175,7 @@ void MyGame::renderUI() {
 	}
 	else
 	{
+		//game is still yett to be won, display the players current language and their current task
 		gfx->setDrawColor(SDL_COLOR_AQUA);
 		gfx->useFont(Font_Large_Main);
 		gfx->drawText(mySystem->GetText("name"), 65, 27);
@@ -183,10 +192,12 @@ void MyGame::renderUI() {
 
 
 
-void MyGame::OnLanguageChanged()
+void MyGame::OnLanguageChanged()//callback to load localized data on language change
 {
+	//get localized flag texture
 	flag = mySystem->GetTexture("flag");
 
+	//have fonts already been loaded before, if so clear old fonts from memory
 	if (Font_Large_Bold != nullptr) {
 		TTF_CloseFont(Font_Large_Bold);
 		TTF_CloseFont(Font_Bold);
@@ -195,6 +206,7 @@ void MyGame::OnLanguageChanged()
 
 	}
 
+	//load localized fonts and keep a pointer so that they can be used for UI text
 	Font_Large_Bold = mySystem->GetFont("bold", 72);
 	Font_Bold = mySystem->GetFont("bold", 30);
 
