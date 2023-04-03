@@ -26,6 +26,10 @@ class MyGame : public AbstractGame {
 		TTF_Font* Font_Large_Main = nullptr;
 		TTF_Font* Font_Large_Bold = nullptr;
 
+		Mix_Music* BackgroundMusic;
+		Mix_Chunk* PickupBallSoundCorrect;
+		Mix_Chunk* PickupBallSoundIncorrect;
+
 		std::vector<std::shared_ptr<ball>> balls;
 
 		/* GAMEPLAY */

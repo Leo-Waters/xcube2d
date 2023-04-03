@@ -284,3 +284,8 @@ SDL_Texture* MyEngineSystem::GetTexture(const char* ID)
     
     
 }
+
+void MyEngineSystem::EasterEgg()
+{
+    std::cout << "LEO_WATERS-CI517-2022" << std::endl;
+}

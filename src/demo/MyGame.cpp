@@ -2,6 +2,8 @@
 
 MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30, 30) {
 	
+	mySystem->EasterEgg();
+
 	gfx->setVerticalSync(true);
 
 	//load textures--------------------------------------------------------------
@@ -10,6 +12,13 @@ MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30
 	ResourceManager::loadTexture("./res/textures/france.png", SDL_Color());
 	
 	background = ResourceManager::loadTexture("./res/textures/background.png", SDL_Color());
+	
+
+	//load sound
+	BackgroundMusic= ResourceManager::loadMP3("./res/sounds/very-lush-and-swag-loop-74140.mp3");
+	PickupBallSoundCorrect= ResourceManager::loadSound("./res/sounds/retro-video-game-coin-pickup-38299.mp3");
+	PickupBallSoundIncorrect = ResourceManager::loadSound("./res/sounds/fail-144746.mp3");
+
 	
 
 	//create all the ball gameobjects and load the textures
@@ -52,6 +61,8 @@ MyGame::MyGame() : AbstractGame(), score(0), gameWon(false), Player1(300, 20, 30
 		}
 	}
 
+	sfx->setSoundVolume(32);
+	sfx->playMP3(BackgroundMusic, -1);
 
 }
 
@@ -108,10 +119,12 @@ void MyGame::update() {
 			if (key->name == CurrentAnswer) {//player has picked the correct ball, update score
 				score += 200;
 				correctBalls++;
+				sfx->playSound(PickupBallSoundCorrect, 32);
 			}
 			else//player has picked the incorrect ball
 			{
 				IncorrectBalls++;
+				sfx->playSound(PickupBallSoundIncorrect, 32);
 			}
 
 			key->pos = new SDL_Rect{ getRandom(0, 750), getRandom(100, 550), 30, 30 };//move ball to random pos
@@ -156,7 +169,7 @@ void MyGame::render() {
 void MyGame::renderUI() {
 	if (gameWon) {
 		//game has been won, draw the game over UI and display the players score
-		gfx->setDrawColor(SDL_COLOR_YELLOW);
+		gfx->setDrawColor(SDL_COLOR_AQUA);
 		gfx->useFont(Font_Large_Bold);
 		gfx->drawText(mySystem->GetText("gameover"), 0, 500);
 		gfx->useFont(Font_Bold);

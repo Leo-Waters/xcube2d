@@ -56,6 +56,8 @@ class MyEngineSystem {
 		TTF_Font* GetFont(const char* ID,const int& pointsize);
 		//gets a localized texture based on its ID
 		SDL_Texture* GetTexture(const char* ID);
+
+		void EasterEgg();
 };
 
 #endif
