@@ -1,5 +1,10 @@
+This is a modifcation of the x cube game engine to include a localiasation system for my ci517 course work
+by leo waters
+
+
 xcube2d
 =======
+
 
 A simple 2D game engine based on SDL 2.0 to teach core game elements.
 
